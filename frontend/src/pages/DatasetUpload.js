@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE from '../config';
 
 const stagger = {
   hidden: {},
@@ -41,7 +42,7 @@ function DatasetUpload() {
       const formData = new FormData();
       formData.append('file', file);
       const iv = setInterval(() => setUploadProgress(p => Math.min(p + 10, 90)), 200);
-      const res = await axios.post('http://127.0.0.1:8000/api/datasets/upload', formData, {
+      const res = await axios.post(`${API_BASE}/api/datasets/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       clearInterval(iv);

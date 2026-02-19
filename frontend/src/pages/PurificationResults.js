@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import API_BASE from '../config';
 
 const stagger = {
   hidden: {},
@@ -41,7 +42,7 @@ function PurificationResults() {
     setDownloadSuccess(false);
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/purification/download/${id}`);
+      const response = await fetch(`${API_BASE}/api/purification/download/${id}`);
 
       if (!response.ok) {
         let detail = `Server error (${response.status})`;

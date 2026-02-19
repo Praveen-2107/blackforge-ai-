@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import API_BASE from '../config';
 
-const API = 'http://127.0.0.1:8000/api/ai';
+const API = `${API_BASE}/api/ai`;
 
 /* ── Markdown-lite renderer (bold, bullets, headers) ── */
 function renderMarkdown(text) {

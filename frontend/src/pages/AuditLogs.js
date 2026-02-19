@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import API_BASE from '../config';
 
 const stagger = {
   hidden: {},
@@ -56,7 +57,7 @@ function AuditLogs() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:8000/api/audit/logs');
+        const res = await axios.get(`${API_BASE}/api/audit/logs`);
         setLogs(res.data.logs);
       } catch {
         setLogs(MOCK_LOGS);

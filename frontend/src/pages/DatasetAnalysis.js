@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import API_BASE from '../config';
 import ThreatBadge from '../components/ThreatBadge';
 import ClusterVisualization from '../components/ClusterVisualization';
 
@@ -29,7 +30,7 @@ function DatasetPicker() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:8000/api/datasets/list');
+        const res = await axios.get(`${API_BASE}/api/datasets/list`);
         setDatasets(res.data.datasets || []);
       } catch {
         setError('Could not load datasets. Make sure the backend is running.');
@@ -251,7 +252,7 @@ function DatasetAnalysis() {
 
   const performAnalysis = useCallback(async (filePath, datasetType) => {
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/detection/analyze_dataset', {
+      const res = await axios.post(`${API_BASE}/api/detection/analyze_dataset`, {
         dataset_id: datasetId || 'unknown',
         file_path: filePath,
         dataset_type: datasetType,
@@ -325,7 +326,7 @@ function DatasetAnalysis() {
     if (!analysis) return;
     setPurifying(true);
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/purification/sanitize', {
+      const res = await axios.post(`${API_BASE}/api/purification/sanitize`, {
         dataset_id: datasetId || 'unknown',
         file_path: location.state?.filePath || '',
         dataset_type: location.state?.datasetType || 'csv',

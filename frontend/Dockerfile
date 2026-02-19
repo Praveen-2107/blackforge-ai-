@@ -1,4 +1,4 @@
-# Frontend Dockerfile
+# Frontend Dockerfile (Render-compatible)
 FROM node:18-alpine
 
 WORKDIR /app
@@ -12,9 +12,18 @@ RUN npm install
 # Copy source code
 COPY . .
 
+# Build arg for API URL - set this in Render environment
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
 # Build the app
 RUN npm run build
 
-# Serve the app
+# Install serve globally
+RUN npm install -g serve
+
+# Expose port (Render uses PORT env variable)
 EXPOSE 3000
-CMD ["npx", "serve", "-s", "build", "-l", "3000"]
+
+# Serve the built app - Render sets PORT env var
+CMD serve -s build -l ${PORT:-3000}
