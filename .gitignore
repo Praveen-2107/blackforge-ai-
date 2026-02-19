@@ -1,0 +1,39 @@
+# dependencies
+**/node_modules/
+
+# build outputs
+**/dist/
+**/build/
+
+# env files
+.env
+.env.*
+
+# python
+**/__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+venv/
+.venv/
+
+# database
+*.db
+*.sqlite3
+
+# uploads
+backend/uploads/
+
+# logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# package lock
+frontend/package-lock.json
