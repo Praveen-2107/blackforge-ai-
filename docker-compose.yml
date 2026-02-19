@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: blackforge_db
+      POSTGRES_USER: blackforge
+      POSTGRES_PASSWORD: blackforge_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U blackforge"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis for Celery
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  # FastAPI Backend
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://blackforge:blackforge_password@db:5432/blackforge_db
+      REDIS_URL: redis://redis:6379
+      PYTHONPATH: /app
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - model_cache:/root/.cache
+    depends_on:
+      - db
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Celery Worker
+  celery-worker:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A app.main worker --loglevel=info
+    environment:
+      DATABASE_URL: postgresql://blackforge:blackforge_password@db:5432/blackforge_db
+      REDIS_URL: redis://redis:6379
+      PYTHONPATH: /app
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - model_cache:/root/.cache
+    depends_on:
+      - db
+      - redis
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:
+  model_cache:
+
+networks:
+  default:
+    name: blackforge-network
